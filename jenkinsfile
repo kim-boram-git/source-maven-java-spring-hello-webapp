@@ -9,12 +9,12 @@ pipeline {
     stage('Checkout') {
       steps {
         git branch: 'main',
-        url: '<git@github.com:kim-boram-git/source-maven-java-spring-hello-webapp.git>'
+        url: 'https://github.com/kim-boram-git/source-maven-java-spring-hello-webapp.git'
       }
     }
     stage('Build') {
       steps {
-        sh 'myn clean package'
+        sh 'mvn clean package'
       }
     }
     stage('Deploy') {
