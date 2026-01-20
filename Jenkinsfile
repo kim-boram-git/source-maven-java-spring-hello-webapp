@@ -20,7 +20,7 @@ pipeline {
       }
     }
 
-    stage('Image Tag){
+    stage('Image Tag'){
       agent any
       steps{
         sh 'docker image tag tomcat:hello boo77 /tomcat:$BUILD_NUMBER'
