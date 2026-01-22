@@ -35,32 +35,40 @@ spec:
 
     stage('Checkout') {
       steps {
-	container('maven')
-         git branch: 'main',
-         url: 'https://github.com/kim-boram-git/source-maven-java-spring-hello-webapp.git'
-       }
-     }
-   }
-    stage('Build & Test') {
-      steps {
-	container('maven')
-        sh 'mvn clean package'
-       }
-     }
-   }
-    stage('') {
-      steps {
-        sh 'docker image tag tomcat:hello boo77/tomcat:${BUILD_NUMBER}'
-        sh 'docker image tag tomcat:hello boo77/tomcat:latest'
-      }
-    }
-    stage('Image Build $ Push') {
-      steps {
-	container('kaiko') {
-          sh 'executor -context=dir:///home/jenkins/agent/workspace/test/ --destin
-ation=<ID>/k8s:$BUILD_NUMBER destination=<ID>/k8s:latest'
+        container('maven') {
+          git branch: 'main',
+          url: 'https://github.com/kim-boram-git/source-maven-java-spring-hello-webapp.git'
         }
       }
     }
+
+    stage('Build & Test') {
+      steps {
+        container('maven') {
+          sh 'mvn clean package'
+        }
+      }
+    }
+
+    stage('Tag Image') {
+      steps {
+        container('maven') {
+          sh 'docker image tag tomcat:hello boo77/tomcat:${BUILD_NUMBER}'
+          sh 'docker image tag tomcat:hello boo77/tomcat:latest'
+        }
+      }
+    }
+
+    stage('Image Build & Push') {
+      steps {
+        container('kaniko') {
+          sh '''
+            /kaniko/executor --context $WORKSPACE --destination <ID>/k8s:${BUILD_NUMBER} --destination <ID>/k8s:latest
+          '''
+        }
+      }
+    }
+
   }
 }
+
